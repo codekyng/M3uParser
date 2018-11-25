@@ -3,11 +3,13 @@
 
 import sys
 
+
 class track():
     def __init__(self, length, title, path):
         self.length = length
         self.title = title
         self.path = path
+
 
 """
     song info lines are formatted like:
@@ -18,11 +20,12 @@ class track():
     ..\Minus The Bear - Planet of Ice\Minus The Bear_Planet of Ice_01_Burying Luck.mp3
 """
 
+
 def parsem3u(infile):
     try:
-        assert(type(infile) == '_io.TextIOWrapper')
+        assert (type(infile) == '_io.TextIOWrapper')
     except AssertionError:
-        infile = open(infile,'r')
+        infile = open(infile, 'rU')
 
     """
         All M3U files start with #EXTM3U.
@@ -32,36 +35,38 @@ def parsem3u(infile):
 
     line = infile.readline()
     if not line.startswith('#EXTM3U'):
-       return
+        return
 
     # initialize playlist variables before reading file
-    playlist=[]
-    song=track(None,None,None)
+    playlist = []
+    song = track(None, None, None)
 
     for line in infile:
-        line=line.strip()
+        line = line.strip()
         if line.startswith('#EXTINF:'):
             # pull length and title from #EXTINF line
-            length,title=line.split('#EXTINF:')[1].split(',',1)
-            song=track(length,title,None)
-        elif (len(line) != 0):
+            length, title = line.split('#EXTINF:')[1].split(',', 1)
+            song = track(length, title, None)
+        elif len(line) != 0:
             # pull song path from all other, non-blank lines
-            song.path=line
+            song.path = line
             playlist.append(song)
             # reset the song variable so it doesn't use the same EXTINF more than once
-            song=track(None,None,None)
+            song = track(None, None, None)
 
     infile.close()
 
     return playlist
 
+
 # for now, just pull the track info and print it onscreen
 # get the M3U file path from the first command line argument
 def main():
-    m3ufile=sys.argv[1]
+    m3ufile = sys.argv[1]
     playlist = parseM3U(m3ufile)
     for track in playlist:
         print (track.title, track.length, track.path)
+
 
 if __name__ == '__main__':
     main()
